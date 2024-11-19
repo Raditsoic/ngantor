@@ -1,19 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    android:id="@+id/main"
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    android:padding="16dp"
+    android:background="@color/black"
+    tools:context=".Ngantor">
 
+    <!-- Top Left Logo -->
+    <ImageView
+        android:id="@+id/logo"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:src="@drawable/logo_small"
+        android:contentDescription="App Logo"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <!-- Title Next to Logo -->
     <TextView
+        android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:text="Ngantor"
+        android:textSize="24sp"
+        android:textColor="@color/aqua"
+        android:fontFamily="@font/space_grotesk_bold"
+        android:layout_marginStart="16dp"
+        app:layout_constraintStart_toEndOf="@id/logo"
+        app:layout_constraintTop_toTopOf="@id/logo"
+        app:layout_constraintBottom_toBottomOf="@id/logo"
+        />
+
+    <!-- Greeting Container -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/greeting_container"
+        android:layout_width="match_parent"
+        android:layout_height="80dp"
+        android:background="@drawable/greeting_container"
+        app:layout_constraintTop_toBottomOf="@id/logo"
+        android:layout_marginTop="24dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
+
+        <!-- Greeting Text Inside Container -->
+        <TextView
+            android:id="@+id/greeting_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Good Morning, Fasul"
+            android:textColor="@color/black"
+            android:textSize="16sp"
+            android:fontFamily="@font/space_grotesk_bold"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            android:layout_marginStart="16dp"
+            />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/time_until_bed"
+            android:text="Time until bedtime: 16 Hours"
+            android:textColor="@color/black"
+            android:textSize="12sp"
+            android:fontFamily="@font/poppins_regular"
+            app:layout_constraintTop_toBottomOf="@id/greeting_text"
+            app:layout_constraintStart_toStartOf="@id/greeting_text"
+            android:layout_marginTop="14dp"
+            />
+
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
