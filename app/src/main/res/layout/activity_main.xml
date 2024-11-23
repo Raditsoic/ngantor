@@ -13,8 +13,8 @@
     <!-- Top Left Logo -->
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="50dp"
-        android:layout_height="50dp"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
         android:src="@drawable/logo_small"
         android:contentDescription="App Logo"
         android:layout_marginTop="16dp"
@@ -45,7 +45,7 @@
         android:layout_height="80dp"
         android:background="@drawable/greeting_container"
         app:layout_constraintTop_toBottomOf="@id/logo"
-        android:layout_marginTop="24dp"
+        android:layout_marginTop="32dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp">
 
@@ -73,10 +73,53 @@
             android:fontFamily="@font/poppins_regular"
             app:layout_constraintTop_toBottomOf="@id/greeting_text"
             app:layout_constraintStart_toStartOf="@id/greeting_text"
-            android:layout_marginTop="14dp"
+            android:layout_marginTop="10dp"
             />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <LinearLayout
+        android:id="@+id/Navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@id/greeting_container"
+        app:layout_constraintTop_toBottomOf="@id/greeting_container"
+        android:layout_marginVertical="32dp"
+        android:layout_marginHorizontal="16dp"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/btn_home"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:fontFamily="@font/space_grotesk_bold"
+            android:text="Home"
+            android:textColor="@color/white">
+        </Button>
+
+        <Button
+            android:id="@+id/btn_logs"
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="wrap_content"
+            android:backgroundTint="@color/black"
+            android:fontFamily="@font/space_grotesk_bold"
+            android:text="Logs"
+            android:textColor="@color/white">
+        </Button>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintStart_toStartOf="@+id/Navigation"
+        app:layout_constraintTop_toBottomOf="@+id/Navigation"
+        android:layout_marginVertical="32dp"
+        android:layout_marginHorizontal="16dp"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
