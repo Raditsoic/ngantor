@@ -55,13 +55,21 @@ public class HomeFragment extends Fragment {
         // Set adapter to RecyclerView
         calendarRecyclerView.setAdapter(calendarAdapter);
 
-        // Add item decoration with hardcoded 8dp spacing
+        // Add item decoration with spacing
         calendarRecyclerView.addItemDecoration(new HorizontalSpaceItemDecoration(
-                (int) (8 * requireContext().getResources().getDisplayMetrics().density) // 8dp converted to pixels
+                (int) (8 * requireContext().getResources().getDisplayMetrics().density)
         ));
+
+        // Scroll to current date (position 30) with smooth scrolling
+        calendarRecyclerView.post(() -> {
+            // Scroll to position 30 (current date) with some offset to center it
+            int offset = (calendarRecyclerView.getWidth() / 2) -
+                    (int) (56 * requireContext().getResources().getDisplayMetrics().density); // Approximate item width
+            ((LinearLayoutManager) calendarRecyclerView.getLayoutManager())
+                    .scrollToPositionWithOffset(30, offset);
+        });
     }
 
-    // Custom ItemDecoration for horizontal spacing
     private static class HorizontalSpaceItemDecoration extends RecyclerView.ItemDecoration {
         private final int spacing;
 

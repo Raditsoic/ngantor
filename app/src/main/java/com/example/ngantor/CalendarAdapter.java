@@ -31,12 +31,26 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
 
     private void generateDateList() {
         Calendar calendar = Calendar.getInstance();
-        // Generate dates for next 30 days
-        for (int i = 0; i < 30; i++) {
+
+        // Add previous 30 days
+        for (int i = -30; i < 0; i++) {
             Calendar date = (Calendar) calendar.clone();
             date.add(Calendar.DAY_OF_YEAR, i);
             dateList.add(date);
         }
+
+        // Add current day
+        dateList.add((Calendar) calendar.clone());
+
+        // Add next 30 days
+        for (int i = 1; i <= 30; i++) {
+            Calendar date = (Calendar) calendar.clone();
+            date.add(Calendar.DAY_OF_YEAR, i);
+            dateList.add(date);
+        }
+
+        // Set initial selection to current date (position 30)
+        selectedPosition = 30;
     }
 
     @NonNull
@@ -60,7 +74,7 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         holder.dateText.setText(dateFormat.format(date.getTime()));
         holder.monthText.setText(monthFormat.format(date.getTime()));
 
-        // Handle selection state using current position
+        // Handle selection state
         holder.itemView.setSelected(selectedPosition == position);
 
         holder.itemView.setOnClickListener(v -> {
