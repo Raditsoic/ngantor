@@ -6,9 +6,7 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
-import com.example.ngantor.R;
-
-public class MainActivity extends AppCompatActivity {
+public class Ngantor extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
