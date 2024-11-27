@@ -30,7 +30,6 @@
             android:layout_width="match_parent"
             android:layout_height="2dp"
             android:backgroundTint="@color/aqua"
-            android:layout_marginHorizontal="24dp">
-        </View>
+            android:layout_marginHorizontal="24dp" />
     </LinearLayout>
 </LinearLayout>
