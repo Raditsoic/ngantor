@@ -3,16 +3,17 @@
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp"
+    android:padding="16dp"
     android:gravity="center"
-    android:background="@drawable/calendar_item_background">
+    android:background="@drawable/calendar_item_state">
 
     <TextView
         android:id="@+id/dayText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:text="Mon"/>
 
     <TextView
         android:id="@+id/dateText"
@@ -20,13 +21,15 @@
         android:layout_height="wrap_content"
         android:textColor="@color/white"
         android:textSize="18sp"
-        android:textStyle="bold" />
+        android:textStyle="bold"
+        android:text="00"/>
 
     <TextView
         android:id="@+id/monthText"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textColor="@color/white"
-        android:textSize="14sp" />
+        android:textSize="14sp"
+        android:text="0000"/>
 
 </LinearLayout>

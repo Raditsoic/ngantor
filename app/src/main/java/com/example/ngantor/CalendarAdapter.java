@@ -77,8 +77,13 @@ public class CalendarAdapter extends RecyclerView.Adapter<CalendarAdapter.Calend
         // Handle selection state
         holder.itemView.setSelected(selectedPosition == position);
 
+        // Handle 'today' state
+        Calendar today = Calendar.getInstance();
+        boolean isToday = today.get(Calendar.YEAR) == date.get(Calendar.YEAR)
+                && today.get(Calendar.DAY_OF_YEAR) == date.get(Calendar.DAY_OF_YEAR);
+        holder.itemView.setEnabled(isToday);
+
         holder.itemView.setOnClickListener(v -> {
-            // Get the current position when click happens
             int newPosition = holder.getAdapterPosition();
             if (newPosition != RecyclerView.NO_POSITION) {
                 int previousPosition = selectedPosition;
