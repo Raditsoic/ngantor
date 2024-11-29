@@ -1,13 +1,17 @@
 package com.example.ngantor;
 
+import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -17,8 +21,12 @@ import java.util.Calendar;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment {
+    private boolean isRecording = false;
     private RecyclerView calendarRecyclerView;
     private CalendarAdapter calendarAdapter;
+
+    private ConstraintLayout sleepButtonBackground;
+    private TextView sleepButtonText;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,6 +40,16 @@ public class HomeFragment extends Fragment {
 
         // Initialize RecyclerView
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
+        sleepButtonBackground = view.findViewById(R.id.start_sleep_button);
+        sleepButtonText = view.findViewById(R.id.sleep_button_text);
+
+        sleepButtonBackground.setOnClickListener(v -> {
+            if (!isRecording) {
+                startSoundMeasurement();
+            } else {
+                stopSoundMeasurement();
+            }
+        });
 
         // Set up layout manager
         LinearLayoutManager layoutManager = new LinearLayoutManager(
@@ -87,5 +105,24 @@ public class HomeFragment extends Fragment {
                 outRect.right = spacing;
             }
         }
+    }
+
+    private void startSoundMeasurement() {
+        if (isRecording) return;
+
+
+        isRecording = true;
+        sleepButtonText.setText("I'm Awake!");
+        sleepButtonText.setTextColor(getResources().getColor(R.color.aqua));
+        sleepButtonBackground.setBackgroundResource(R.drawable.container_stroke_gradient);
+    }
+
+    private void stopSoundMeasurement() {
+        if (!isRecording) return;
+
+        isRecording = false;
+        sleepButtonText.setText("Start Sleep");
+        sleepButtonText.setTextColor(getResources().getColor(R.color.black));
+        sleepButtonBackground.setBackgroundResource(R.drawable.container_solid_gradient);
     }
 }
