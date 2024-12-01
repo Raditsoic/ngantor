@@ -6,17 +6,32 @@ import android.content.pm.PackageManager;
 import android.media.MediaRecorder;
 import android.util.Log;
 import androidx.core.content.ContextCompat;
-import java.io.IOException;
 
-public class DecibelMeasureHelper {
-    private static final String TAG = "DecibelMeasureHelper";
-    private static final int SAMPLE_INTERVAL = 500; // milliseconds
+import com.example.ngantor.data.models.SoundLog;
+import com.example.ngantor.data.repositories.SoundLogRepository;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+public class DecibelSensor {
+    private static final String TAG = "DecibelSensor";
+    private static final int SAMPLE_INTERVAL = 1000; // milliseconds
     private static final int MAX_ZERO_READINGS = 10;
+    private static final int SAVE_INTERVAL = 15 * 60 * 1000;
 
     private MediaRecorder mediaRecorder;
     private boolean isRecording = false;
     private int zeroReadingCount = 0;
     private DecibelMeasureListener listener;
+    private List<Double> decibelReadings = new ArrayList<>();
+    private SoundLogRepository soundLogRepository;
+    private int currentSleepSessionId = -1;
+    private ScheduledExecutorService scheduledExecutorService;
+    private Context context;
 
     public interface DecibelMeasureListener {
         void onDecibelUpdate(double decibels);
@@ -24,8 +39,10 @@ public class DecibelMeasureHelper {
         void onMeasurementStopped();
     }
 
-    public DecibelMeasureHelper(DecibelMeasureListener listener) {
+    public DecibelSensor(Context context, DecibelMeasureListener listener) {
         this.listener = listener;
+        this.context = context; // Assign the passed context to the field
+        this.soundLogRepository = new SoundLogRepository(context); // Now `context` is valid
     }
 
     public boolean checkAudioPermissions(Context context) {
@@ -58,6 +75,10 @@ public class DecibelMeasureHelper {
             mediaRecorder.start();
             isRecording = true;
 
+            scheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
+            scheduledExecutorService.scheduleAtFixedRate(this::saveAverageDecibelReading,
+                    15, 15, TimeUnit.MINUTES);
+
             new Thread(this::updateDecibels).start();
 
             return true;
@@ -70,13 +91,31 @@ public class DecibelMeasureHelper {
         }
     }
 
+    private void saveAverageDecibelReading() {
+        if (decibelReadings.isEmpty()) return;
+
+        float averageDecibel = (float) decibelReadings.stream()
+                .mapToDouble(Double::doubleValue)
+                .average()
+                .orElse(0.0);
+
+        SoundLog soundLog = new SoundLog();
+        soundLog.setSleepId(currentSleepSessionId);
+        soundLog.setDecibel(averageDecibel);
+        soundLog.setTimestamp(System.currentTimeMillis());
+
+        soundLogRepository.insertLog(soundLog);
+
+        Log.i(TAG, String.format("Saved average decibel reading: %.1f dB", averageDecibel));
+
+        decibelReadings.clear();
+    }
 
     private void updateDecibels() {
         while (isRecording) {
             try {
                 Thread.sleep(SAMPLE_INTERVAL);
 
-                // Ensure this runs on the main thread
                 if (mediaRecorder != null) {
                     try {
                         double amplitude = mediaRecorder.getMaxAmplitude();
@@ -90,6 +129,9 @@ public class DecibelMeasureHelper {
 
                             Log.i(TAG, String.format("Sound Level: %.1f dB (Amplitude: %.1f)",
                                     decibels, amplitude));
+
+                            // Store for average calculation
+                            decibelReadings.add(decibels);
 
                             notifyDecibelUpdate(decibels);
                         } else {
@@ -122,11 +164,22 @@ public class DecibelMeasureHelper {
     public void stopSoundMeasurement() {
         if (!isRecording) return;
 
+        // Save any remaining readings
+        if (!decibelReadings.isEmpty()) {
+            saveAverageDecibelReading();
+        }
+
+        // Shutdown scheduled executor
+        if (scheduledExecutorService != null) {
+            scheduledExecutorService.shutdown();
+        }
+
         resetRecording();
     }
 
     private void resetRecording() {
         isRecording = false;
+        currentSleepSessionId = -1;
 
         if (mediaRecorder != null) {
             try {
@@ -146,7 +199,6 @@ public class DecibelMeasureHelper {
 
         Log.i(TAG, "Sound measurement stopped");
     }
-
 
     public boolean isRecording() {
         return isRecording;

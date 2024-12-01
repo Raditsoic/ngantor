@@ -13,9 +13,9 @@ public interface  SoundLogDao {
     @Insert
     void insert(SoundLog soundLog);
 
-    @Query("SELECT * FROM sound_log ORDER BY timestamp DESC")
+    @Query("SELECT * FROM sound_logs ORDER BY timestamp DESC")
     List<SoundLog> getAllLogs();
 
-    @Query("SELECT * FROM sound_log WHERE sleepId = :sleepId ORDER BY timestamp ASC")
+    @Query("SELECT * FROM sound_logs WHERE sleepId = :sleepId ORDER BY timestamp ASC")
     List<SoundLog> getLogsBySleepId(int sleepId);
 }
