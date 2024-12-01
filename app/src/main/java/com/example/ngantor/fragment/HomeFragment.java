@@ -1,11 +1,9 @@
-package com.example.ngantor;
+package com.example.ngantor.fragment;
 
-import android.graphics.drawable.GradientDrawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -16,17 +14,18 @@ import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.ngantor.usecase.DecibelMeasureHelper;
+import com.example.ngantor.usecase.Calendar;
+import com.example.ngantor.R;
+import com.example.ngantor.usecase.DecibelSensor;
 
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements DecibelMeasureHelper.DecibelMeasureListener {
-    private DecibelMeasureHelper decibelMeasureHelper;
+public class HomeFragment extends Fragment implements DecibelSensor.DecibelMeasureListener {
+    private DecibelSensor decibelMeasureHelper;
     private boolean isRecording = false;
     private RecyclerView calendarRecyclerView;
-    private CalendarAdapter calendarAdapter;
+    private Calendar calendarAdapter;
 
     private ConstraintLayout sleepButtonBackground;
     private TextView sleepButtonText;
@@ -42,7 +41,7 @@ public class HomeFragment extends Fragment implements DecibelMeasureHelper.Decib
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        decibelMeasureHelper = new DecibelMeasureHelper(this);
+        decibelMeasureHelper = new DecibelSensor(requireContext(), this);
 
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         sleepButtonBackground = view.findViewById(R.id.start_sleep_button);
@@ -64,7 +63,7 @@ public class HomeFragment extends Fragment implements DecibelMeasureHelper.Decib
         );
         calendarRecyclerView.setLayoutManager(layoutManager);
 
-        calendarAdapter = new CalendarAdapter(date -> {
+        calendarAdapter = new Calendar(date -> {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String selectedDate = sdf.format(date.getTime());
             Toast.makeText(requireContext(),
@@ -123,6 +122,8 @@ public class HomeFragment extends Fragment implements DecibelMeasureHelper.Decib
     }
 
     private void updateSleepButtonUI(boolean isRecording) {
+        this.isRecording = isRecording; // Add this line to toggle the recording state
+
         if (isRecording) {
             sleepButtonText.setText("I'm Awake!");
             sleepButtonText.setTextColor(getResources().getColor(R.color.aqua));
@@ -132,7 +133,6 @@ public class HomeFragment extends Fragment implements DecibelMeasureHelper.Decib
             sleepButtonText.setTextColor(getResources().getColor(R.color.black));
             sleepButtonBackground.setBackgroundResource(R.drawable.container_solid_gradient);
 
-            // Reset decibel reading
             if (decibelReadingText != null) {
                 decibelReadingText.setText("--");
             }
@@ -160,13 +160,11 @@ public class HomeFragment extends Fragment implements DecibelMeasureHelper.Decib
 
     @Override
     public void onMeasurementStopped() {
-        // Ensure UI is updated when measurement stops
         getActivity().runOnUiThread(() -> {
             updateSleepButtonUI(false);
         });
     }
 
-    // Don't forget to stop measurement when fragment is destroyed
     @Override
     public void onDestroy() {
         super.onDestroy();

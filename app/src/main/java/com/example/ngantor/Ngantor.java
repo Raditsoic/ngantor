@@ -6,6 +6,9 @@ import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 
+import com.example.ngantor.fragment.HomeFragment;
+import com.example.ngantor.fragment.LogsFragment;
+
 public class Ngantor extends AppCompatActivity {
 
     @Override

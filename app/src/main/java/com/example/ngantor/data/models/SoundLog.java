@@ -3,7 +3,7 @@ package com.example.ngantor.data.models;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "sound_log")
+@Entity(tableName = "sound_logs")
 public class SoundLog {
     @PrimaryKey(autoGenerate = true)
     private int id;
