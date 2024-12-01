@@ -6,15 +6,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="8dp"
     android:background="@color/black"
     tools:context=".Ngantor">
 
     <!-- Top Left Logo -->
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/logo_small"
         android:contentDescription="App Logo"
         android:layout_marginTop="16dp"
@@ -29,7 +28,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ngantor"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textColor="@color/aqua"
         android:fontFamily="@font/space_grotesk_bold"
         android:layout_marginStart="16dp"
