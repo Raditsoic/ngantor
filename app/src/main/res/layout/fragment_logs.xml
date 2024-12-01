@@ -14,7 +14,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/space_grotesk_bold"
             android:textColor="@color/aqua"
-            android:layout_marginLeft="48dp"
+            android:layout_marginLeft="24dp"
             android:text="26 November 2024">
         </TextView>
         <TextView
@@ -24,12 +24,11 @@
             android:textColor="@color/white"
             android:text="Sleep Rating: 12%"
             android:layout_marginBottom="8dp"
-            android:layout_marginLeft="48dp">
+            android:layout_marginLeft="24dp">
         </TextView>
         <View
             android:layout_width="match_parent"
             android:layout_height="2dp"
-            android:background="@color/aqua"
-            android:layout_marginHorizontal="24dp" />
+            android:background="@color/aqua"/>
     </LinearLayout>
 </LinearLayout>
