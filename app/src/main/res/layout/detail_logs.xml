@@ -10,8 +10,8 @@
     <!-- Logo -->
     <ImageView
         android:id="@+id/logo"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
         android:src="@drawable/logo_small"
         android:contentDescription="App Logo"
         android:layout_marginTop="16dp"
@@ -26,7 +26,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Ngantor"
-        android:textSize="24sp"
+        android:textSize="16sp"
         android:textColor="@color/aqua"
         android:fontFamily="@font/space_grotesk_bold"
         android:layout_marginStart="16dp"
@@ -75,7 +75,7 @@
         android:textSize="16sp"
         android:fontFamily="@font/poppins_regular"
         app:layout_constraintTop_toBottomOf="@id/sleep_stats_date"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="48dp"
         tools:ignore="MissingConstraints,RtlSymmetry" />
 
     <!--  Rating Value  -->
@@ -102,7 +102,7 @@
         android:fontFamily="@font/poppins_regular"
         app:layout_constraintTop_toBottomOf="@id/sleep_rating_value"
         android:paddingStart="16dp"
-        android:layout_marginTop="64dp"
+        android:layout_marginTop="48dp"
         tools:ignore="MissingConstraints,RtlSymmetry" />
 
     <!--  Sleep Time Value  -->
