@@ -12,7 +12,7 @@ import com.example.ngantor.data.repositories.dao.SleepSessionDao;
 import com.example.ngantor.data.repositories.dao.SoundLogDao;
 
 
-@Database(entities = {SoundLog.class, SleepSession.class}, version = 1, exportSchema = false)
+@Database(entities = {SoundLog.class, SleepSession.class}, version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     private static AppDatabase INSTANCE;
 
