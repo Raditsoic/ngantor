@@ -13,6 +13,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,12 +21,15 @@ import com.example.ngantor.usecase.Calendar;
 import com.example.ngantor.R;
 import com.example.ngantor.usecase.SleepMode;
 import com.example.ngantor.utils.PermissionHelper;
+import com.example.ngantor.utils.fetch.SleepModeViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private boolean isRecording = false;
+    private SleepModeViewModel sleepModeViewModel;
+
     private RecyclerView calendarRecyclerView;
 
     private ConstraintLayout sleepButtonBackground;
@@ -46,10 +50,16 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         sleepMode = new SleepMode(requireContext());
+        sleepModeViewModel = new ViewModelProvider(requireActivity()).get(SleepModeViewModel.class);
 
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         sleepButtonBackground = view.findViewById(R.id.start_sleep_button);
         sleepButtonText = view.findViewById(R.id.sleep_button_text);
+
+        sleepModeViewModel.getIsRecording().observe(getViewLifecycleOwner(), recording -> {
+            isRecording = recording;
+            updateSleepButtonUI();
+        });
 
         sleepButtonBackground.setOnClickListener(v -> {
             if (!PermissionHelper.checkAndRequestAudioPermission(requireContext(), requireActivity())) {
@@ -61,12 +71,12 @@ public class HomeFragment extends Fragment {
             if (!isRecording) {
                 sleepMode.StartSleep();
                 isRecording = true;
-                updateSleepButtonUI();
+                sleepModeViewModel.setIsRecording(true);
                 Toast.makeText(requireContext(), "Sleep mode started", Toast.LENGTH_SHORT).show();
             } else {
                 sleepMode.EndSleep();
                 isRecording = false;
-                updateSleepButtonUI();
+                sleepModeViewModel.setIsRecording(false);
                 Toast.makeText(requireContext(), "Sleep mode ended", Toast.LENGTH_SHORT).show();
             }
         });
