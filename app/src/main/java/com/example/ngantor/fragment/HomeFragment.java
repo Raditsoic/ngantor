@@ -1,6 +1,8 @@
 package com.example.ngantor.fragment;
 
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,20 +18,22 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.ngantor.usecase.Calendar;
 import com.example.ngantor.R;
-import com.example.ngantor.usecase.DecibelSensor;
+import com.example.ngantor.usecase.SleepMode;
+import com.example.ngantor.utils.PermissionHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
-public class HomeFragment extends Fragment implements DecibelSensor.DecibelMeasureListener {
-    private DecibelSensor decibelMeasureHelper;
+public class HomeFragment extends Fragment {
     private boolean isRecording = false;
     private RecyclerView calendarRecyclerView;
-    private Calendar calendarAdapter;
 
     private ConstraintLayout sleepButtonBackground;
     private TextView sleepButtonText;
     private TextView decibelReadingText;
+
+    private SleepMode sleepMode;
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -41,20 +45,32 @@ public class HomeFragment extends Fragment implements DecibelSensor.DecibelMeasu
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        decibelMeasureHelper = new DecibelSensor(requireContext(), this);
+        sleepMode = new SleepMode(requireContext());
 
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         sleepButtonBackground = view.findViewById(R.id.start_sleep_button);
         sleepButtonText = view.findViewById(R.id.sleep_button_text);
-        decibelReadingText = view.findViewById(R.id.decibel_reading_text);
 
         sleepButtonBackground.setOnClickListener(v -> {
+            if (!PermissionHelper.checkAndRequestAudioPermission(requireContext(), requireActivity())) {
+                Log.e("HomeFragment", "Microphone permission not granted.");
+                Toast.makeText(requireContext(), "Please grant microphone permission", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
             if (!isRecording) {
-                startSoundMeasurement();
+                sleepMode.StartSleep();
+                isRecording = true;
+                updateSleepButtonUI();
+                Toast.makeText(requireContext(), "Sleep mode started", Toast.LENGTH_SHORT).show();
             } else {
-                stopSoundMeasurement();
+                sleepMode.EndSleep();
+                isRecording = false;
+                updateSleepButtonUI();
+                Toast.makeText(requireContext(), "Sleep mode ended", Toast.LENGTH_SHORT).show();
             }
         });
+
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(
                 requireContext(),
@@ -63,7 +79,7 @@ public class HomeFragment extends Fragment implements DecibelSensor.DecibelMeasu
         );
         calendarRecyclerView.setLayoutManager(layoutManager);
 
-        calendarAdapter = new Calendar(date -> {
+        Calendar calendarAdapter = new Calendar(date -> {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault());
             String selectedDate = sdf.format(date.getTime());
             Toast.makeText(requireContext(),
@@ -104,26 +120,8 @@ public class HomeFragment extends Fragment implements DecibelSensor.DecibelMeasu
         }
     }
 
-    private void startSoundMeasurement() {
-        // Check and request permissions if needed
-        if (decibelMeasureHelper.checkAudioPermissions(requireContext())) {
-            if (decibelMeasureHelper.startSoundMeasurement(requireContext())) {
-                updateSleepButtonUI(true);
-            }
-        } else {
-            // Request permissions (you'll need to implement this)
-            requestPermissions(new String[]{android.Manifest.permission.RECORD_AUDIO}, 100);
-        }
-    }
 
-    private void stopSoundMeasurement() {
-        decibelMeasureHelper.stopSoundMeasurement();
-        updateSleepButtonUI(false);
-    }
-
-    private void updateSleepButtonUI(boolean isRecording) {
-        this.isRecording = isRecording; // Add this line to toggle the recording state
-
+    private void updateSleepButtonUI() {
         if (isRecording) {
             sleepButtonText.setText("I'm Awake!");
             sleepButtonText.setTextColor(getResources().getColor(R.color.aqua));
@@ -140,36 +138,16 @@ public class HomeFragment extends Fragment implements DecibelSensor.DecibelMeasu
     }
 
     @Override
-    public void onDecibelUpdate(double decibels) {
-        // Update UI with decibel reading
-        if (decibelReadingText != null) {
-            getActivity().runOnUiThread(() -> {
-                decibelReadingText.setText(String.format("%.1f dB", decibels));
-            });
-        }
-    }
-
-    @Override
-    public void onMeasurementError(String errorMessage) {
-        // Show error to user
-        getActivity().runOnUiThread(() -> {
-            Toast.makeText(requireContext(), errorMessage, Toast.LENGTH_SHORT).show();
-            updateSleepButtonUI(false);
-        });
-    }
-
-    @Override
-    public void onMeasurementStopped() {
-        getActivity().runOnUiThread(() -> {
-            updateSleepButtonUI(false);
-        });
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (decibelMeasureHelper != null) {
-            decibelMeasureHelper.stopSoundMeasurement();
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == PermissionHelper.REQUEST_RECORD_AUDIO_PERMISSION) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.i("Permission", "Microphone permission granted");
+                Toast.makeText(requireContext(), "Microphone permission granted", Toast.LENGTH_SHORT).show();
+            } else {
+                Log.e("Permission", "Microphone permission denied");
+                Toast.makeText(requireContext(), "Microphone permission is required for sleep mode", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 }

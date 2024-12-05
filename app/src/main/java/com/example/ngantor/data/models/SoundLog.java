@@ -1,20 +1,30 @@
 package com.example.ngantor.data.models;
 
 import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.Index;
 import androidx.room.PrimaryKey;
 
-@Entity(tableName = "sound_logs")
+@Entity(
+        tableName = "sound_logs",
+        foreignKeys = @ForeignKey(
+                entity = SleepSession.class,
+                parentColumns = "id",
+                childColumns = "sleepId",
+                onDelete = ForeignKey.CASCADE
+        ),
+        indices = {@Index(value = "sleepId")}
+)
 public class SoundLog {
     @PrimaryKey(autoGenerate = true)
     private int id;
 
     private long timestamp;
     private float decibel;
+    private int sleepId;
 
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
-
-    private int sleepId;
 
     public long getTimestamp() { return timestamp; }
     public void setTimestamp(long timestamp) { this.timestamp = timestamp; }
