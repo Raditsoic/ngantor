@@ -8,11 +8,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.TimePickerDialog;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -20,17 +23,22 @@ import com.example.ngantor.usecase.Calendar;
 import com.example.ngantor.R;
 import com.example.ngantor.usecase.SleepMode;
 import com.example.ngantor.utils.PermissionHelper;
+import com.example.ngantor.utils.fetch.SleepModeViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 public class HomeFragment extends Fragment {
     private boolean isRecording = false;
+    private SleepModeViewModel sleepModeViewModel;
+
     private RecyclerView calendarRecyclerView;
 
     private ConstraintLayout sleepButtonBackground;
     private TextView sleepButtonText;
-    private TextView decibelReadingText;
+
+    private View bedtime_display;
+    private View bedtime_edit;
 
     private SleepMode sleepMode;
 
@@ -46,10 +54,24 @@ public class HomeFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         sleepMode = new SleepMode(requireContext());
+        sleepModeViewModel = new ViewModelProvider(requireActivity()).get(SleepModeViewModel.class);
 
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         sleepButtonBackground = view.findViewById(R.id.start_sleep_button);
         sleepButtonText = view.findViewById(R.id.sleep_button_text);
+        bedtime_display = view.findViewById(R.id.bedtime_display);
+        bedtime_edit = view.findViewById(R.id.bedtime_edit);
+        TextView alarmDisplay = view.findViewById(R.id.alarm_time_display);
+        ImageButton alarmEdit = view.findViewById(R.id.alarm_edit);
+
+        bedtime_edit.setOnClickListener(v -> showTimePickerDialog((TextView) bedtime_display));
+        alarmEdit.setOnClickListener(v -> showTimePickerDialog(alarmDisplay));
+
+
+        sleepModeViewModel.getIsRecording().observe(getViewLifecycleOwner(), recording -> {
+            isRecording = recording;
+            updateSleepButtonUI();
+        });
 
         sleepButtonBackground.setOnClickListener(v -> {
             if (!PermissionHelper.checkAndRequestAudioPermission(requireContext(), requireActivity())) {
@@ -61,15 +83,17 @@ public class HomeFragment extends Fragment {
             if (!isRecording) {
                 sleepMode.StartSleep();
                 isRecording = true;
-                updateSleepButtonUI();
+                sleepModeViewModel.setIsRecording(true);
                 Toast.makeText(requireContext(), "Sleep mode started", Toast.LENGTH_SHORT).show();
             } else {
                 sleepMode.EndSleep();
                 isRecording = false;
-                updateSleepButtonUI();
+                sleepModeViewModel.setIsRecording(false);
                 Toast.makeText(requireContext(), "Sleep mode ended", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(
@@ -130,10 +154,6 @@ public class HomeFragment extends Fragment {
             sleepButtonText.setText("Start Sleep");
             sleepButtonText.setTextColor(getResources().getColor(R.color.black));
             sleepButtonBackground.setBackgroundResource(R.drawable.container_solid_gradient);
-
-            if (decibelReadingText != null) {
-                decibelReadingText.setText("--");
-            }
         }
     }
 
@@ -149,5 +169,22 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), "Microphone permission is required for sleep mode", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void showTimePickerDialog(TextView displayView) {
+        // Get current time as default
+        java.util.Calendar calendar = java.util.Calendar.getInstance(); // Fully qualify the class
+        int hour = calendar.get(java.util.Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(java.util.Calendar.MINUTE);
+
+        // Show TimePickerDialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(),
+                (view, hourOfDay, minuteOfHour) -> {
+                    // Format and set the selected time
+                    String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minuteOfHour);
+                    displayView.setText(formattedTime);
+                },
+                hour, minute, true); // Use 24-hour format
+        timePickerDialog.show();
     }
 }

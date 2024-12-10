@@ -111,13 +111,16 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
-            <ImageView
+            <ImageButton
                 android:id="@+id/alarm_edit"
                 android:layout_width="20dp"
                 android:layout_height="20dp"
+                android:scaleType="fitCenter"
                 android:src="@drawable/pencil"
+                android:background="@null"
                 app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintEnd_toEndOf="parent" />
+                app:layout_constraintEnd_toEndOf="parent"
+                />
 
 
             <TextView
