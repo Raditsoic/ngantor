@@ -53,7 +53,7 @@
             android:id="@+id/greeting_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Good Morning, Fasul"
+            android:text="Good Morning, Fasrol!!"
             android:textColor="@color/black"
             android:textSize="16sp"
             android:fontFamily="@font/space_grotesk_bold"

@@ -8,6 +8,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.app.TimePickerDialog;
+import android.widget.ImageButton;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -34,7 +36,9 @@ public class HomeFragment extends Fragment {
 
     private ConstraintLayout sleepButtonBackground;
     private TextView sleepButtonText;
-    private TextView decibelReadingText;
+
+    private View bedtime_display;
+    private View bedtime_edit;
 
     private SleepMode sleepMode;
 
@@ -55,6 +59,14 @@ public class HomeFragment extends Fragment {
         calendarRecyclerView = view.findViewById(R.id.calendar_recycler_view);
         sleepButtonBackground = view.findViewById(R.id.start_sleep_button);
         sleepButtonText = view.findViewById(R.id.sleep_button_text);
+        bedtime_display = view.findViewById(R.id.bedtime_display);
+        bedtime_edit = view.findViewById(R.id.bedtime_edit);
+        TextView alarmDisplay = view.findViewById(R.id.alarm_time_display);
+        ImageButton alarmEdit = view.findViewById(R.id.alarm_edit);
+
+        bedtime_edit.setOnClickListener(v -> showTimePickerDialog((TextView) bedtime_display));
+        alarmEdit.setOnClickListener(v -> showTimePickerDialog(alarmDisplay));
+
 
         sleepModeViewModel.getIsRecording().observe(getViewLifecycleOwner(), recording -> {
             isRecording = recording;
@@ -80,6 +92,8 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), "Sleep mode ended", Toast.LENGTH_SHORT).show();
             }
         });
+
+
 
 
         LinearLayoutManager layoutManager = new LinearLayoutManager(
@@ -140,10 +154,6 @@ public class HomeFragment extends Fragment {
             sleepButtonText.setText("Start Sleep");
             sleepButtonText.setTextColor(getResources().getColor(R.color.black));
             sleepButtonBackground.setBackgroundResource(R.drawable.container_solid_gradient);
-
-            if (decibelReadingText != null) {
-                decibelReadingText.setText("--");
-            }
         }
     }
 
@@ -159,5 +169,22 @@ public class HomeFragment extends Fragment {
                 Toast.makeText(requireContext(), "Microphone permission is required for sleep mode", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void showTimePickerDialog(TextView displayView) {
+        // Get current time as default
+        java.util.Calendar calendar = java.util.Calendar.getInstance(); // Fully qualify the class
+        int hour = calendar.get(java.util.Calendar.HOUR_OF_DAY);
+        int minute = calendar.get(java.util.Calendar.MINUTE);
+
+        // Show TimePickerDialog
+        TimePickerDialog timePickerDialog = new TimePickerDialog(requireContext(),
+                (view, hourOfDay, minuteOfHour) -> {
+                    // Format and set the selected time
+                    String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minuteOfHour);
+                    displayView.setText(formattedTime);
+                },
+                hour, minute, true); // Use 24-hour format
+        timePickerDialog.show();
     }
 }
