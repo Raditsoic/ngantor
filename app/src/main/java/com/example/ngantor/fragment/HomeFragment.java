@@ -1,5 +1,9 @@
 package com.example.ngantor.fragment;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.util.Log;
@@ -19,6 +23,7 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.ngantor.usecase.AlarmReceiver;
 import com.example.ngantor.usecase.Calendar;
 import com.example.ngantor.R;
 import com.example.ngantor.usecase.SleepMode;
@@ -183,8 +188,39 @@ public class HomeFragment extends Fragment {
                     // Format and set the selected time
                     String formattedTime = String.format(Locale.getDefault(), "%02d:%02d", hourOfDay, minuteOfHour);
                     displayView.setText(formattedTime);
+
+                    setAlarm(hourOfDay, minuteOfHour);
                 },
                 hour, minute, true); // Use 24-hour format
         timePickerDialog.show();
+    }
+
+    private void setAlarm(int hourOfDay, int minuteOfHour) {
+        // Use AlarmManager to schedule the actual alarm
+        AlarmManager alarmManager = (AlarmManager) requireContext().getSystemService(Context.ALARM_SERVICE);
+
+        // Create an Intent for the BroadcastReceiver that will handle the alarm
+        Intent alarmIntent = new Intent(requireContext(), AlarmReceiver.class);
+        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                requireContext(),
+                0,
+                alarmIntent,
+                PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE
+        );
+
+        // Set up the calendar with the selected time
+        java.util.Calendar calendar = java.util.Calendar.getInstance();
+        calendar.setTimeInMillis(System.currentTimeMillis());
+        calendar.set(java.util.Calendar.HOUR_OF_DAY, hourOfDay);
+        calendar.set(java.util.Calendar.MINUTE, minuteOfHour);
+        calendar.set(java.util.Calendar.SECOND, 0);
+
+        // Ensure the alarm is set for the next occurrence
+        if (calendar.getTimeInMillis() <= System.currentTimeMillis()) {
+            calendar.add(java.util.Calendar.DAY_OF_YEAR, 1);
+        }
+
+        // Set the alarm
+        alarmManager.setExact(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
     }
 }
