@@ -28,6 +28,7 @@
         private TextView dateTextView;
         private TextView lightLevelTextView;
         private TextView sleepTimetextView;
+        private TextView sleepQualityTextView;
         private LineChart lineChart;
         private SleepViewModel sleepViewModel;
         private SoundLogRepository soundLogRepository;
@@ -40,6 +41,7 @@
             dateTextView = findViewById(R.id.sleep_stats_date);
             lightLevelTextView = findViewById(R.id.light_level_value);
             sleepTimetextView = findViewById(R.id.sleep_time_value);
+            sleepQualityTextView = findViewById(R.id.sleep_rating_value);
             lineChart = findViewById(R.id.graph);
 
 
@@ -64,6 +66,7 @@
         private void populateDetails(SleepSession sleepSession) {
             dateTextView.setText(formatDate(sleepSession.getStartTime()));
             lightLevelTextView.setText(sleepSession.getLightLevel() + " Lux");
+            sleepQualityTextView.setText(formatQuality(sleepSession.getSleepQuality()) + "%");
             long startTime = sleepSession.getStartTime();
             long endTime = sleepSession.getEndTime();
 
@@ -72,6 +75,10 @@
                 String sleepTime = formatDuration(durationMillis);
                 sleepTimetextView.setText(sleepTime);
             }
+        }
+
+        private int formatQuality(float quality) {
+            return (int) (quality * 100);
         }
 
         private String formatDate(long timestamp) {

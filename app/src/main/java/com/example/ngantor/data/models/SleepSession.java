@@ -12,6 +12,8 @@ public class SleepSession {
     private long endTime;
     private float lightLevel;
 
+    private float sleepQuality;
+
     public int getId() { return id; }
     public void setId(int id) { this.id = id; }
 
@@ -23,4 +25,8 @@ public class SleepSession {
 
     public float getLightLevel() { return lightLevel; }
     public void setLightLevel(float lightLevel) { this.lightLevel = lightLevel; }
+
+    public float getSleepQuality() { return sleepQuality; }
+
+    public void setSleepQuality(float sleepQuality) { this.sleepQuality = sleepQuality; }
 }
