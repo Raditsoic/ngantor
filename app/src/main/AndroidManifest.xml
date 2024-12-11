@@ -30,6 +30,7 @@
             </intent-filter>
         </activity>
         <receiver android:name=".usecase.AlarmReceiver" />
+        <activity android:name=".LogDetailActivity"/>
     </application>
 
 </manifest>

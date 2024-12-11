@@ -39,7 +39,7 @@ public class SleepSessionRepository {
         return sleepSessionDao.getAllSleepSessions();
     }
 
-    public SleepSession getSleepSessionById(int sessionId) {
+    public LiveData<SleepSession> getSleepSessionById(int sessionId) {
         return sleepSessionDao.getSessionById(sessionId);
     }
 
