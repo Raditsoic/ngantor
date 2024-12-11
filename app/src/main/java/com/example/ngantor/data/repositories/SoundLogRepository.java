@@ -2,6 +2,8 @@ package com.example.ngantor.data.repositories;
 
 import android.content.Context;
 
+import androidx.lifecycle.LiveData;
+
 import com.example.ngantor.data.database.AppDatabase;
 import com.example.ngantor.data.models.SoundLog;
 import com.example.ngantor.data.repositories.dao.SoundLogDao;
@@ -28,7 +30,7 @@ public class SoundLogRepository {
         return soundLogDao.getAllLogs();
     }
 
-    public List<SoundLog> getLogsBySleepId(int sleepId) {
+    public LiveData<List<SoundLog>> getLogsBySleepId(int sleepId) {
         return soundLogDao.getLogsBySleepId(sleepId);
     }
 }

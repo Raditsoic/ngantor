@@ -88,7 +88,7 @@ public class SleepMode {
             double currentSoundLevel = decibelSensor.getDecibelLevel();
             soundLevels.add(currentSoundLevel);
 
-            if (soundLevels.size() >= 900) {
+            if (soundLevels.size() >= 10) {
                 int averageDecibel = calculateAverageSoundLevel();
                 saveSoundLog(sleepSessionId, averageDecibel);
                 soundLevels.clear();

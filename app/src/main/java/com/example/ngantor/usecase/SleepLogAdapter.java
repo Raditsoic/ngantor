@@ -19,9 +19,15 @@ import java.util.Locale;
 public class SleepLogAdapter extends RecyclerView.Adapter<SleepLogAdapter.SleepViewHolder> {
 
     private List<SleepSession> sleepSessions;
+    private OnSleepLogClickListener clickListener;
 
-    public SleepLogAdapter(List<SleepSession> sleepSessions) {
+    public interface OnSleepLogClickListener {
+        void onSleepLogClick(SleepSession sleepLog);
+    }
+
+    public SleepLogAdapter(List<SleepSession> sleepSessions, OnSleepLogClickListener clickListener) {
         this.sleepSessions = sleepSessions;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -40,6 +46,12 @@ public class SleepLogAdapter extends RecyclerView.Adapter<SleepLogAdapter.SleepV
         holder.dateTextView.setText(formattedDate);
 
         holder.ratingTextView.setText("Light Level: " + session.getLightLevel() + " Lux");
+
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onSleepLogClick(session);
+            }
+        });
     }
 
     @Override
@@ -48,8 +60,10 @@ public class SleepLogAdapter extends RecyclerView.Adapter<SleepLogAdapter.SleepV
     }
 
     public void updateData(List<SleepSession> newSessions) {
-        this.sleepSessions = newSessions;
-        notifyDataSetChanged();
+        if (newSessions != null) {
+            this.sleepSessions = newSessions;
+            notifyDataSetChanged(); // Refresh the RecyclerView
+        }
     }
 
     static class SleepViewHolder extends RecyclerView.ViewHolder {
