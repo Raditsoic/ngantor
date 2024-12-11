@@ -18,5 +18,5 @@
         android:layout_height="wrap_content"
         android:fontFamily="@font/poppins_regular"
         android:textColor="@color/white"
-        android:text="Light Level: 32 lux" />
+        android:text="Sleep Rating: 100%" />
 </LinearLayout>

@@ -45,7 +45,7 @@ public class SleepLogAdapter extends RecyclerView.Adapter<SleepLogAdapter.SleepV
         String formattedDate = formatDate(session.getStartTime());
         holder.dateTextView.setText(formattedDate);
 
-        holder.ratingTextView.setText("Light Level: " + session.getLightLevel() + " Lux");
+        holder.ratingTextView.setText("Sleep Quality: " + formatQuality(session.getSleepQuality()) + "%");
 
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {
@@ -62,8 +62,12 @@ public class SleepLogAdapter extends RecyclerView.Adapter<SleepLogAdapter.SleepV
     public void updateData(List<SleepSession> newSessions) {
         if (newSessions != null) {
             this.sleepSessions = newSessions;
-            notifyDataSetChanged(); // Refresh the RecyclerView
+            notifyDataSetChanged();
         }
+    }
+
+    public int formatQuality(float quality) {
+        return (int) (quality * 100);
     }
 
     static class SleepViewHolder extends RecyclerView.ViewHolder {
