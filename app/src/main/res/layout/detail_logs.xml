@@ -63,7 +63,7 @@
         android:paddingStart="16dp"
         tools:ignore="MissingConstraints,RtlSymmetry" />
 
-    <!--  Rating TItle  -->
+    <!--  Rating Title  -->
     <TextView
         android:id="@+id/sleep_rating_title"
         android:layout_width="match_parent"

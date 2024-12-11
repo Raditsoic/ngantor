@@ -3,11 +3,18 @@ package com.example.ngantor.usecase;
 import android.content.Context;
 import android.util.Log;
 
+import androidx.room.util.FileUtil;
+
 import com.example.ngantor.data.models.SleepSession;
 import com.example.ngantor.data.models.SoundLog;
 import com.example.ngantor.data.repositories.SleepSessionRepository;
 import com.example.ngantor.data.repositories.SoundLogRepository;
+import com.example.ngantor.utils.ModelLoader;
 
+import org.tensorflow.lite.Interpreter;
+
+import java.io.IOException;
+import java.nio.MappedByteBuffer;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Timer;
@@ -21,6 +28,7 @@ public class SleepMode {
     private final LuxSensor luxSensor;
     private final DecibelSensor decibelSensor;
     private final Context context;
+    private final Interpreter sleepQualityModel;
 
     public boolean active;
     private Timer soundRecordingTimer;
@@ -38,6 +46,8 @@ public class SleepMode {
         this.soundLevels = new ArrayList<>();
         this.databaseExecutor = Executors.newSingleThreadScheduledExecutor();
         active = false;
+
+        this.sleepQualityModel = ModelLoader.loadModel(context, "sleep_quality.tflite");
     }
 
     public void StartSleep() {
@@ -136,7 +146,18 @@ public class SleepMode {
             try {
                 SleepSession latestSession = sleepSessionRepository.getLatestSleepSession();
                 if (latestSession != null) {
+                    // Calculate sleep duration
+                    float sleepDuration = calculateSleepDuration(latestSession.getStartTime(), endTime);
+
+                    // Get light level
+                    float lightLevel = latestSession.getLightLevel();
+
+                    // Predict sleep quality
+                    float sleepQuality = predictSleepQuality(sleepDuration, lightLevel);
+                    Log.i("Sleep Quality", String.valueOf(sleepQuality));
+                    // Update sleep session
                     latestSession.setEndTime(endTime);
+                    latestSession.setSleepQuality(sleepQuality);
                     sleepSessionRepository.updateSleepSession(latestSession);
                 }
             } catch (Exception e) {
@@ -145,7 +166,31 @@ public class SleepMode {
         });
     }
 
+    private float calculateSleepDuration(long startTime, long endTime) {
+        // Convert milliseconds to hours
+        return (endTime - startTime) / (1000f * 60 * 60);
+    }
+
+    private float predictSleepQuality(float sleepDuration, float lightLevel) {
+        if (sleepQualityModel == null) {
+            Log.e("SleepMode", "Sleep quality model is not loaded");
+            return -1f;
+        }
+
+        // Prepare input
+        float[][] input = {{sleepDuration, lightLevel}};
+        float[][] output = new float[1][1];
+
+        // Run inference
+        sleepQualityModel.run(input, output);
+
+        return output[0][0];
+    }
+
     public void cleanup() {
+        if (sleepQualityModel != null) {
+            sleepQualityModel.close();
+        }
         databaseExecutor.shutdown();
     }
 
